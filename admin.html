@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>หน้าจอแอดมิน (Desktop View) | PastelWork 3D</title>
+  <meta name="description" content="ระบบจัดการเวลาทำงานและวิเคราะห์ข้อมูลพนักงาน สำหรับผู้ดูแลระบบ สไตล์ 3D Pastel">
+  
+  <!-- Google Fonts: Prompt & Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body class="page-admin-mode">
+
+  <!-- Confetti Canvas -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Navigation Bar: Switch Page & Controls -->
+  <header class="page-header-nav">
+    <div class="nav-container">
+      <div class="brand-group">
+        <span class="vector-icon-badge">
+          <img src="logo.svg" alt="Burapha University Logo" class="w-8 h-8 object-contain">
+        </span>
+        <div>
+          <h1 class="brand-heading">มหาวิทยาลัยบูรพา (BUU)</h1>
+          <span class="sub-heading-pill">ระบบบริหารเวลาและสถิติ (Desktop View)</span>
+        </div>
+      </div>
+
+      <div class="nav-link-group">
+        <button type="button" class="pill-btn-outline" onclick="resetMockData()" title="รีเซ็ตข้อมูล Mockup">
+          <span class="icon-slot-sm">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </span>
+          <span>รีเซ็ตข้อมูล</span>
+        </button>
+        <!-- Distinct Link to Employee Page -->
+        <a href="employee.html" class="pill-btn-action" title="เปิดหน้าจอพนักงาน">
+          <span class="icon-slot-sm">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+          </span>
+          <span>ไปที่หน้าจอพนักงาน (Mobile)</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Admin Desktop View Container -->
+  <main class="admin-page-layout">
+    <div class="admin-container">
+      
+      <!-- เมนูด้านซ้าย (Sidebar): รวมเมนูจัดการทั้ง 5 หน้า -->
+      <aside class="admin-sidebar" aria-label="เมนูการจัดการระบบ">
+        <div class="sidebar-brand">
+          <div class="sidebar-logo-icon">
+            <img src="logo.svg" alt="BUU Logo" style="width:32px; height:32px; object-fit:contain;">
+          </div>
+          <div>
+            <div class="sidebar-title">มหาวิทยาลัยบูรพา</div>
+            <div class="sidebar-sub">ระบบบริหารงานบุคคล & สถิติ</div>
+          </div>
+        </div>
+
+        <ul class="sidebar-menu-list">
+          <li>
+            <button type="button" class="sidebar-menu-btn active" id="menuBtnDashboard" onclick="switchAdminSection('dashboard', this)">
+              <span class="sidebar-icon-svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+              </span>
+              <span>แดชบอร์ด</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="sidebar-menu-btn" id="menuBtnRules" onclick="switchAdminSection('rules', this)">
+              <span class="sidebar-icon-svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="m9 14 2 2 4-4"></path></svg>
+              </span>
+              <span>กติกาและเกณฑ์คะแนน</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="sidebar-menu-btn" id="menuBtnRewards" onclick="switchAdminSection('rewards', this)">
+              <span class="sidebar-icon-svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+              </span>
+              <span>จัดการของรางวัล</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="sidebar-menu-btn" id="menuBtnEmployees" onclick="switchAdminSection('employees', this)">
+              <span class="sidebar-icon-svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </span>
+              <span>รายชื่อพนักงาน</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="sidebar-menu-btn" id="menuBtnReports" onclick="switchAdminSection('reports', this)">
+              <span class="sidebar-icon-svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              </span>
+              <span>สรุปรายงาน</span>
+            </button>
+          </li>
+        </ul>
+
+        <div class="sidebar-user-footer">
+          <div class="user-3d-avatar-vector" style="width:38px; height:38px; font-size:12px;">
+            <span>สพ</span>
+          </div>
+          <div>
+            <div style="font-size:0.84rem; font-weight:700; color:#1E293B;">สมเกียรติ พรประเสริฐ</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">ผู้ดูแลระบบ (Admin)</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- พื้นที่เนื้อหาหลักแอดมิน (เปลี่ยนตาม 5 หน้าใน Sidebar) -->
+      <section class="admin-main-area" aria-label="เนื้อหาแดชบอร์ด">
+
+        <!-- ====================================================
+             1. SECTION: แดชบอร์ด (Dashboard View)
+             ==================================================== -->
+        <div class="admin-view-section active" id="adminViewDashboard">
+          
+          <!-- ส่วนสรุปผล (Top Widgets): 4 ใบเรียงแนวนอน แสดงสถิติรายวัน -->
+          <div class="top-widgets-grid">
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">มาทำงานปกติ</span>
+                <div class="stat-big-number" id="statPresentCount">42</div>
+                <span class="stat-badge-trend trend-green">84% ของทั้งหมด</span>
+              </div>
+              <div class="widget-vector-badge badge-mint-pastel">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2FA87C" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">มาสาย</span>
+                <div class="stat-big-number" id="statLateCount">5</div>
+                <span class="stat-badge-trend trend-yellow">10% ของทั้งหมด</span>
+              </div>
+              <div class="widget-vector-badge badge-yellow-pastel">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E09400" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">ขาด / ลางาน</span>
+                <div class="stat-big-number" id="statAbsentCount">3</div>
+                <span class="stat-badge-trend trend-coral">ลา 2, ขาด 1</span>
+              </div>
+              <div class="widget-vector-badge badge-coral-pastel">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E04D4D" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="17" y1="8" x2="22" y2="13"></line><line x1="22" y1="8" x2="17" y2="13"></line></svg>
+              </div>
+            </div>
+
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">คะแนนแจกวันนี้</span>
+                <div class="stat-big-number" id="statPointsIssued">+840</div>
+                <span class="stat-badge-trend trend-lilac">พอยต์สะสม</span>
+              </div>
+              <div class="widget-vector-badge badge-lilac-pastel">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7E5FDF" stroke-width="2.2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- ตารางบันทึกการลงเวลาทำงานรายวัน -->
+          <div class="data-panel-card">
+            <div class="table-toolbar">
+              <div class="table-header-titles">
+                <h2 style="display:flex; align-items:center; gap:8px;">
+                  <span class="icon-slot-sm">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                  </span>
+                  <span>บันทึกการลงเวลาทำงานรายวัน</span>
+                </h2>
+                <p>ข้อมูลอัปเดตแบบเรียลไทม์ เชื่อมโยงกับการสแกนของพนักงาน</p>
+              </div>
+
+              <div class="toolbar-controls">
+                <div class="search-box-wrapper">
+                  <span class="search-icon-inside">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  </span>
+                  <input type="text" id="tableSearchInput" class="search-input" placeholder="ค้นหาชื่อ, รหัส..." oninput="handleTableSearch(this.value)">
+                </div>
+
+                <select id="statusFilterSelect" class="filter-select" onchange="handleStatusFilter(this.value)">
+                  <option value="all">ทุกสถานะ</option>
+                  <option value="ontime">ตรงเวลา</option>
+                  <option value="late">มาสาย</option>
+                  <option value="absent">ขาดงาน</option>
+                  <option value="leave">ลางาน</option>
+                </select>
+
+                <button type="button" class="btn-3d-action btn-green-add" onclick="openAddAttendanceModal()">
+                  <span class="icon-slot-sm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  </span>
+                  <span>เพิ่มบันทึกเวลา</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-table-wrapper">
+              <table class="rounded-table" id="attendanceTable">
+                <thead>
+                  <tr>
+                    <th>พนักงาน</th>
+                    <th>แผนก</th>
+                    <th>เวลาเข้า</th>
+                    <th>เวลาออก</th>
+                    <th>สถานะ</th>
+                    <th>สถานที่ / พิกัด</th>
+                    <th>คะแนนที่ได้</th>
+                    <th style="text-align: center;">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="attendanceTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ====================================================
+             2. SECTION: กติกาและเกณฑ์คะแนน (Work Rules & Points)
+             ==================================================== -->
+        <div class="admin-view-section" id="adminViewRules">
+          
+          <div class="data-panel-card">
+            <div class="table-toolbar">
+              <div class="table-header-titles">
+                <h2 style="display:flex; align-items:center; gap:8px;">
+                  <span class="icon-slot-sm">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2FA87C" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="m9 14 2 2 4-4"></path></svg>
+                  </span>
+                  <span>ตั้งค่ากะเวลาและกติการะบบลงเวลา</span>
+                </h2>
+                <p>กำหนดช่วงเวลาเข้างาน ระยะเวลาอนุโลม และการตรวจสอบพิกัด</p>
+              </div>
+              <button type="button" class="btn-3d-action btn-blue-save" onclick="saveWorkRulesSettings()">
+                <span>บันทึกการตั้งค่ากติกา</span>
+              </button>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:18px;">
+              <div class="form-group">
+                <label class="form-label">เวลาเริ่มงานปกติ (Shift Start)</label>
+                <input type="time" id="ruleShiftStart" class="form-input" value="08:30">
+              </div>
+              <div class="form-group">
+                <label class="form-label">เวลาเลิกงานปกติ (Shift End)</label>
+                <input type="time" id="ruleShiftEnd" class="form-input" value="17:30">
+              </div>
+              <div class="form-group">
+                <label class="form-label">ระยะเวลาอนุโลมสาย (Grace Period นาที)</label>
+                <input type="number" id="ruleGraceMinutes" class="form-input" value="15" min="0" max="60">
+                <small style="color:var(--text-muted); font-size:0.75rem;">หากเช็คอินหลัง 08:45 น. ระบบจะนับเป็น "มาสาย" อัตโนมัติ</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">เวลาตัดรอบขาดงาน (Cut-off Time)</label>
+                <input type="time" id="ruleCutoffAbsent" class="form-input" value="10:00">
+                <small style="color:var(--text-muted); font-size:0.75rem;">หากไม่ลงเวลาภายในเวลานี้จะถือว่า "ขาดงาน"</small>
+              </div>
+            </div>
+
+            <hr style="border:none; border-top:1px dashed #E2ECF9; margin:6px 0;">
+
+            <div class="table-header-titles">
+              <h3 style="font-size:1.05rem; color:#1E293B;">เกณฑ์การแจกคะแนนสะสม (Gamification Points)</h3>
+              <p>ตั้งค่าจำนวนแต้มเพื่อจูงใจให้พนักงานตรงต่อเวลา</p>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
+              <div class="form-group">
+                <label class="form-label">คะแนนเข้างานตรงเวลา (PTS/วัน)</label>
+                <input type="number" id="rulePointsOnTime" class="form-input" value="20" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label">คะแนนทำงาน WFH ได้รับอนุมัติ (PTS/วัน)</label>
+                <input type="number" id="rulePointsWfh" class="form-input" value="15" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label">คะแนนปลอบใจกรณีมาสาย (PTS/วัน)</label>
+                <input type="number" id="rulePointsLate" class="form-input" value="5" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label">โบนัสสตรีคตรงเวลาครบ 5 วัน (PTS)</label>
+                <input type="number" id="rulePointsStreak5" class="form-input" value="50" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label">โบนัสสตรีคตรงเวลาครบ 20 วันทั้งเดือน (PTS)</label>
+                <input type="number" id="rulePointsStreak20" class="form-input" value="300" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label">รัศมี GPS ออฟฟิศที่ยอมรับได้ (เมตร)</label>
+                <input type="number" id="ruleGpsRadius" class="form-input" value="150" min="50" max="1000">
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+              <label class="switch-label-wrapper">
+                <div>
+                  <strong style="font-size:0.88rem; color:#1E293B; display:block;">บังคับตรวจสอบพิกัด GPS ของพนักงาน</strong>
+                  <span style="font-size:0.75rem; color:var(--text-muted);">ไม่อนุญาตให้ลงเวลาหากอยู่นอกพื้นที่สำนักงาน เว้นแต่ได้รับการอนุมัติ WFH</span>
+                </div>
+                <input type="checkbox" id="ruleRequireGps" class="switch-toggle-input" checked>
+              </label>
+
+              <label class="switch-label-wrapper">
+                <div>
+                  <strong style="font-size:0.88rem; color:#1E293B; display:block;">เปิดสิทธิ์ให้สามารถเลือกทำงานจากที่บ้าน (WFH Mode)</strong>
+                  <span style="font-size:0.75rem; color:var(--text-muted);">พนักงานสามารถเช็คอินและรับพอยต์ในอัตรา WFH ได้</span>
+                </div>
+                <input type="checkbox" id="ruleAllowWfh" class="switch-toggle-input" checked>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ====================================================
+             3. SECTION: จัดการของรางวัล (Reward Management)
+             ==================================================== -->
+        <div class="admin-view-section" id="adminViewRewards">
+          
+          <!-- Summary Cards for Rewards -->
+          <div class="top-widgets-grid">
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">รายการของรางวัล</span>
+                <div class="stat-big-number" id="statRewardCount">5</div>
+                <span class="stat-badge-trend trend-green">พร้อมให้แลกทั้งหมด</span>
+              </div>
+              <div class="widget-vector-badge badge-mint-pastel">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2FA87C" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line></svg>
+              </div>
+            </div>
+
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">สิทธิ์ที่ถูกแลกไปแล้ว</span>
+                <div class="stat-big-number" id="statClaimedCount">111</div>
+                <span class="stat-badge-trend trend-lilac">เดือนนี้ 46 ครั้ง</span>
+              </div>
+              <div class="widget-vector-badge badge-lilac-pastel">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7E5FDF" stroke-width="2"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </div>
+            </div>
+
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">พอยต์ที่แลกสะสม</span>
+                <div class="stat-big-number">74,800</div>
+                <span class="stat-badge-trend trend-yellow">PTS ที่ถูกใช้แลก</span>
+              </div>
+              <div class="widget-vector-badge badge-yellow-pastel">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#FFB703" stroke="#D97706" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </div>
+            </div>
+
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">ยอดคงเหลือในคลัง</span>
+                <div class="stat-big-number" id="statTotalStock">32</div>
+                <span class="stat-badge-trend trend-green">ชิ้น / สิทธิ์คงเหลือ</span>
+              </div>
+              <div class="widget-vector-badge badge-coral-pastel">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E04D4D" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rewards Table Card -->
+          <div class="data-panel-card">
+            <div class="table-toolbar">
+              <div class="table-header-titles">
+                <h2>คลังของรางวัล (Reward Inventory)</h2>
+                <p>จัดการรายการของรางวัล สต็อก และคะแนนที่ต้องใช้ในการแลก</p>
+              </div>
+
+              <div class="toolbar-controls">
+                <button type="button" class="btn-3d-action btn-green-add" onclick="openAddRewardModal()">
+                  <span class="icon-slot-sm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  </span>
+                  <span>เพิ่มของรางวัลใหม่</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-table-wrapper">
+              <table class="rounded-table" id="adminRewardsTable">
+                <thead>
+                  <tr>
+                    <th>ของรางวัล</th>
+                    <th>หมวดหมู่</th>
+                    <th>คะแนนที่ใช้</th>
+                    <th>คงเหลือ</th>
+                    <th>แลกแล้ว</th>
+                    <th>สถานะ</th>
+                    <th style="text-align: center;">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="adminRewardsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ====================================================
+             4. SECTION: รายชื่อพนักงาน (Employees Directory)
+             ==================================================== -->
+        <div class="admin-view-section" id="adminViewEmployees">
+          
+          <!-- Summary Cards for Employees -->
+          <div class="top-widgets-grid">
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">พนักงานทั้งหมด</span>
+                <div class="stat-big-number" id="statEmpTotal">10</div>
+                <span class="stat-badge-trend trend-green">5 แผนกในระบบ</span>
+              </div>
+              <div class="widget-vector-badge badge-mint-pastel">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2FA87C" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path></svg>
+              </div>
+            </div>
+
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">ประจำออฟฟิศ</span>
+                <div class="stat-big-number">8</div>
+                <span class="stat-badge-trend trend-green">ทำงานในสำนักงาน</span>
+              </div>
+              <div class="widget-vector-badge badge-yellow-pastel">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E09400" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="9" y1="22" x2="9" y2="18"></line><line x1="15" y1="22" x2="15" y2="18"></line></svg>
+              </div>
+            </div>
+
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">ทำงาน WFH</span>
+                <div class="stat-big-number">1</div>
+                <span class="stat-badge-trend trend-lilac">ได้รับอนุมัติล่วงหน้า</span>
+              </div>
+              <div class="widget-vector-badge badge-lilac-pastel">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7E5FDF" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+              </div>
+            </div>
+
+            <div class="stat-widget-card">
+              <div class="stat-content-left">
+                <span class="stat-title-label">ลางาน</span>
+                <div class="stat-big-number">1</div>
+                <span class="stat-badge-trend trend-coral">ลาป่วย 1 คน</span>
+              </div>
+              <div class="widget-vector-badge badge-coral-pastel">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E04D4D" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Employees Directory Table -->
+          <div class="data-panel-card">
+            <div class="table-toolbar">
+              <div class="table-header-titles">
+                <h2>รายชื่อพนักงานทั้งหมด (Employees Directory)</h2>
+                <p>ตรวจสอบคะแนนสะสม สตรีค และอัตราการตรงต่อเวลาของพนักงานแต่ละคน</p>
+              </div>
+
+              <div class="toolbar-controls">
+                <div class="search-box-wrapper">
+                  <span class="search-icon-inside">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  </span>
+                  <input type="text" id="empSearchInput" class="search-input" placeholder="ค้นหาชื่อ, รหัส..." oninput="handleEmployeeSearch(this.value)">
+                </div>
+
+                <select id="empDeptFilter" class="filter-select" onchange="handleEmployeeDeptFilter(this.value)">
+                  <option value="all">ทุกแผนก</option>
+                  <option value="Design">Design</option>
+                  <option value="Engineering">Engineering</option>
+                  <option value="Product">Product</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="People & HR">People & HR</option>
+                </select>
+
+                <button type="button" class="btn-3d-action btn-green-add" onclick="openAddEmployeeModal()">
+                  <span class="icon-slot-sm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  </span>
+                  <span>เพิ่มพนักงานใหม่</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-table-wrapper">
+              <table class="rounded-table" id="adminEmployeesTable">
+                <thead>
+                  <tr>
+                    <th>พนักงาน</th>
+                    <th>แผนก / ตำแหน่ง</th>
+                    <th>คะแนนสะสม</th>
+                    <th>สตรีค</th>
+                    <th>ความตรงต่อเวลา</th>
+                    <th>สถานะ</th>
+                    <th style="text-align: center;">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="adminEmployeesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ====================================================
+             5. SECTION: สรุปรายงาน (Attendance Reports & Analytics)
+             ==================================================== -->
+        <div class="admin-view-section" id="adminViewReports">
+          
+          <div class="data-panel-card">
+            <div class="table-toolbar">
+              <div class="table-header-titles">
+                <h2 style="display:flex; align-items:center; gap:8px;">
+                  <span class="icon-slot-sm">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5BA4FC" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                  </span>
+                  <span>รายงานสถิติการเข้างานประจำเดือน (Monthly Analytics)</span>
+                </h2>
+                <p>วิเคราะห์ภาพรวมการตรงต่อเวลา สถิติมาสาย และการกระจายตัวของแต้ม</p>
+              </div>
+
+              <div class="toolbar-controls">
+                <select class="filter-select">
+                  <option>ตุลาคม 2569</option>
+                  <option>กันยายน 2569</option>
+                  <option>สิงหาคม 2569</option>
+                </select>
+                <button type="button" class="btn-3d-action btn-green-add" onclick="exportReportData('csv')">
+                  <span>ส่งออก CSV</span>
+                </button>
+                <button type="button" class="btn-3d-action" style="background:#FFFFFF; border:1px solid #CBD5E1; color:#334155;" onclick="exportReportData('pdf')">
+                  <span>พิมพ์รายงาน (PDF)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Report KPI Cards -->
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:16px;">
+              <div style="background:#F0F7FF; border-radius:18px; padding:18px; border:1px solid #D4E8FE;">
+                <div style="font-size:0.78rem; font-weight:700; color:#397ED6;">อัตราตรงต่อเวลาเฉลี่ย</div>
+                <div style="font-size:1.8rem; font-weight:700; color:#1E293B; margin:4px 0;">94.2%</div>
+                <div style="font-size:0.74rem; color:#2FA87C; font-weight:600;">+2.4% จากเดือนที่แล้ว</div>
+              </div>
+
+              <div style="background:#FFF9E6; border-radius:18px; padding:18px; border:1px solid #FFE4A0;">
+                <div style="font-size:0.78rem; font-weight:700; color:#854D0E;">จำนวนการมาสายรวม</div>
+                <div style="font-size:1.8rem; font-weight:700; color:#1E293B; margin:4px 0;">14 ครั้ง</div>
+                <div style="font-size:0.74rem; color:#D97706; font-weight:600;">ลดลง 32% เทียบกับไตรมาสก่อน</div>
+              </div>
+
+              <div style="background:#E8F9F2; border-radius:18px; padding:18px; border:1px solid #B8EAD4;">
+                <div style="font-size:0.78rem; font-weight:700; color:#0F5132;">วันลาพักร้อน / ป่วยรวม</div>
+                <div style="font-size:1.8rem; font-weight:700; color:#1E293B; margin:4px 0;">8 วัน</div>
+                <div style="font-size:0.74rem; color:#0F5132; font-weight:600;">เฉลี่ย 0.8 วัน / คน</div>
+              </div>
+
+              <div style="background:#F3EEFF; border-radius:18px; padding:18px; border:1px solid #DFD3FD;">
+                <div style="font-size:0.78rem; font-weight:700; color:#7E5FDF;">พอยต์แจกสะสมทั้งระบบ</div>
+                <div style="font-size:1.8rem; font-weight:700; color:#1E293B; margin:4px 0;">18,450</div>
+                <div style="font-size:0.74rem; color:#7E5FDF; font-weight:600;">แต้มรางวัล Gamification</div>
+              </div>
+            </div>
+
+            <!-- Breakdown by Department with Progress Bars -->
+            <div style="margin-top:10px;">
+              <h3 style="font-size:1.05rem; color:#1E293B; margin-bottom:14px;">สถิติการตรงต่อเวลาเปรียบเทียบตามแผนก</h3>
+
+              <div style="display:flex; flex-direction:column; gap:14px;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:0.86rem; margin-bottom:4px;">
+                    <strong>People & HR</strong>
+                    <span style="font-weight:700; color:#2FA87C;">100% (ตรงเวลา 44/44 ครั้ง)</span>
+                  </div>
+                  <div class="progress-bar-container"><div class="progress-bar-fill high" style="width:100%;"></div></div>
+                </div>
+
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:0.86rem; margin-bottom:4px;">
+                    <strong>Design & Product</strong>
+                    <span style="font-weight:700; color:#2FA87C;">96.5% (ตรงเวลา 55/57 ครั้ง)</span>
+                  </div>
+                  <div class="progress-bar-container"><div class="progress-bar-fill high" style="width:96.5%;"></div></div>
+                </div>
+
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:0.86rem; margin-bottom:4px;">
+                    <strong>Engineering</strong>
+                    <span style="font-weight:700; color:#2FA87C;">94.0% (ตรงเวลา 79/84 ครั้ง)</span>
+                  </div>
+                  <div class="progress-bar-container"><div class="progress-bar-fill high" style="width:94%;"></div></div>
+                </div>
+
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:0.86rem; margin-bottom:4px;">
+                    <strong>Marketing & Content</strong>
+                    <span style="font-weight:700; color:#E09400;">86.2% (ตรงเวลา 25/29 ครั้ง)</span>
+                  </div>
+                  <div class="progress-bar-container"><div class="progress-bar-fill medium" style="width:86.2%;"></div></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- ========================================================
+       MODAL 1: เพิ่ม / แก้ไข บันทึกการลงเวลา
+       ======================================================== -->
+  <div class="modal-backdrop" id="attendanceModal">
+    <div class="modal-clay-window">
+      <div class="modal-top-bar">
+        <h3 class="modal-title" id="modalTitle">
+          <span class="icon-slot-sm" id="modalActionIconSlot">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </span>
+          <span id="modalTitleText">บันทึกการลงเวลาพนักงาน</span>
+        </h3>
+        <button type="button" class="modal-close-btn" onclick="closeAttendanceModal()">✕</button>
+      </div>
+
+      <form id="attendanceForm" onsubmit="handleAttendanceFormSubmit(event)">
+        <input type="hidden" id="formRecordId">
+
+        <div class="form-group">
+          <label class="form-label" for="formEmpName">ชื่อ - นามสกุล พนักงาน</label>
+          <input type="text" id="formEmpName" class="form-input" required placeholder="เช่น ธนกฤต มั่งมีทรัพย์">
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label class="form-label" for="formDepartment">แผนก</label>
+            <select id="formDepartment" class="form-select">
+              <option value="Design">Design & UX</option>
+              <option value="Engineering">Engineering</option>
+              <option value="Product">Product</option>
+              <option value="Marketing">Marketing</option>
+              <option value="People & HR">People & HR</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="formStatus">สถานะ</label>
+            <select id="formStatus" class="form-select">
+              <option value="ontime">ตรงเวลา</option>
+              <option value="late">มาสาย</option>
+              <option value="absent">ขาดงาน</option>
+              <option value="leave">ลางาน</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label class="form-label" for="formCheckIn">เวลาเข้างาน</label>
+            <input type="text" id="formCheckIn" class="form-input" placeholder="08:45 น.">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="formCheckOut">เวลาออกงาน</label>
+            <input type="text" id="formCheckOut" class="form-input" placeholder="18:00 น. หรือ -">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="formLocation">สถานที่ / พิกัด</label>
+          <input type="text" id="formLocation" class="form-input" placeholder="เช่น สำนักงานใหญ่ (ชั้น 14)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="formPoints">คะแนนสะสมที่ได้รับ (PTS)</label>
+          <input type="number" id="formPoints" class="form-input" value="20" min="0" max="100">
+        </div>
+
+        <div class="modal-actions-footer">
+          <button type="button" class="btn-3d-action" style="background:#E2E8F0; color:#475569;" onclick="closeAttendanceModal()">
+            ยกเลิก
+          </button>
+          <button type="submit" class="btn-3d-action btn-green-add" id="btnSubmitForm">
+            <span class="icon-slot-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+            </span>
+            <span>บันทึกข้อมูล</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 2: เพิ่ม / แก้ไข ของรางวัล
+       ======================================================== -->
+  <div class="modal-backdrop" id="rewardModal">
+    <div class="modal-clay-window">
+      <div class="modal-top-bar">
+        <h3 class="modal-title" id="rewardModalTitle">
+          <span>เพิ่มของรางวัลใหม่</span>
+        </h3>
+        <button type="button" class="modal-close-btn" onclick="closeRewardModal()">✕</button>
+      </div>
+
+      <form id="rewardForm" onsubmit="handleRewardFormSubmit(event)">
+        <input type="hidden" id="formRewardId">
+
+        <div class="form-group">
+          <label class="form-label" for="formRewardTitle">ชื่อของรางวัล</label>
+          <input type="text" id="formRewardTitle" class="form-input" required placeholder="เช่น บัตรกำนัล Central 200B">
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label class="form-label" for="formRewardCategory">หมวดหมู่</label>
+            <select id="formRewardCategory" class="form-select">
+              <option value="Food & Drinks">Food & Drinks</option>
+              <option value="Leave Privilege">Leave Privilege</option>
+              <option value="Merchandise">Merchandise</option>
+              <option value="Wellness">Wellness</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="formRewardCost">คะแนนที่ใช้ (PTS)</label>
+            <input type="number" id="formRewardCost" class="form-input" value="500" min="50" required>
+          </div>
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label class="form-label" for="formRewardStock">จำนวนสต็อกคงเหลือ</label>
+            <input type="number" id="formRewardStock" class="form-input" value="10" min="1" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="formRewardIcon">ไอคอนหมวดหมู่</label>
+            <select id="formRewardIcon" class="form-select">
+              <option value="coffee">กาแฟ / เครื่องดื่ม (Coffee)</option>
+              <option value="sun">วันลา / พักร้อน (Sun)</option>
+              <option value="utensils">อาหาร (Food)</option>
+              <option value="package">สินค้า / แก้วน้ำ (Merch)</option>
+              <option value="heartPulse">สุขภาพ (Wellness)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="formRewardDesc">รายละเอียดสิทธิประโยชน์</label>
+          <input type="text" id="formRewardDesc" class="form-input" placeholder="คำอธิบายเงื่อนไขการใช้งาน">
+        </div>
+
+        <div class="modal-actions-footer">
+          <button type="button" class="btn-3d-action" style="background:#E2E8F0; color:#475569;" onclick="closeRewardModal()">
+            ยกเลิก
+          </button>
+          <button type="submit" class="btn-3d-action btn-green-add">
+            <span>บันทึกของรางวัล</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 3: เพิ่ม / แก้ไข พนักงาน
+       ======================================================== -->
+  <div class="modal-backdrop" id="employeeModal">
+    <div class="modal-clay-window">
+      <div class="modal-top-bar">
+        <h3 class="modal-title" id="employeeModalTitle">
+          <span>เพิ่มพนักงานใหม่</span>
+        </h3>
+        <button type="button" class="modal-close-btn" onclick="closeEmployeeModal()">✕</button>
+      </div>
+
+      <form id="employeeForm" onsubmit="handleEmployeeFormSubmit(event)">
+        <input type="hidden" id="formDirEmpId">
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label class="form-label" for="formDirName">ชื่อ - นามสกุล</label>
+            <input type="text" id="formDirName" class="form-input" required placeholder="เช่น ธนกฤต มั่งมีทรัพย์">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="formDirNickname">ชื่อเล่น</label>
+            <input type="text" id="formDirNickname" class="form-input" placeholder="เช่น กฤต">
+          </div>
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label class="form-label" for="formDirDept">แผนก</label>
+            <select id="formDirDept" class="form-select">
+              <option value="Engineering">Engineering</option>
+              <option value="Design">Design</option>
+              <option value="Product">Product</option>
+              <option value="Marketing">Marketing</option>
+              <option value="People & HR">People & HR</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="formDirPos">ตำแหน่ง</label>
+            <input type="text" id="formDirPos" class="form-input" value="Specialist" placeholder="เช่น Software Engineer">
+          </div>
+        </div>
+
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label class="form-label" for="formDirPoints">คะแนนสะสมเริ่มต้น (PTS)</label>
+            <input type="number" id="formDirPoints" class="form-input" value="500" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="formDirStatus">สถานะการทำงาน</label>
+            <select id="formDirStatus" class="form-select">
+              <option value="active">ทำงานปกติ (Active)</option>
+              <option value="on_leave">ลางาน (On Leave)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-actions-footer">
+          <button type="button" class="btn-3d-action" style="background:#E2E8F0; color:#475569;" onclick="closeEmployeeModal()">
+            ยกเลิก
+          </button>
+          <button type="submit" class="btn-3d-action btn-green-add">
+            <span>บันทึกพนักงาน</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-bubble" id="toastBubble">
+    <span class="toast-icon-svg" id="toastIconSlot"></span>
+    <span class="toast-message" id="toastMsg">บันทึกสำเร็จเรียบร้อย</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="icons.js"></script>
+  <script src="mockData.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

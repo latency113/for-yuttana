@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบลงเวลาและคะแนนสะสมพนักงาน 3D Pastel | PastelWork</title>
+  <meta name="description" content="ระบบบันทึกเวลาทำงานและวิเคราะห์ข้อมูล สไตล์ 3D Pastel Claymorphism แยกหน้าระหว่างพนักงานและผู้ดูแลระบบอย่างชัดเจน">
+  
+  <!-- Google Fonts: Prompt & Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="page-header-nav">
+    <div class="nav-container">
+      <div class="brand-group">
+        <span class="vector-icon-badge">
+          <img src="logo.svg" alt="Burapha University Logo" class="w-8 h-8 object-contain">
+        </span>
+        <div>
+          <h1 class="brand-heading">มหาวิทยาลัยบูรพา (BUU)</h1>
+          <span class="sub-heading-pill">ระบบลงเวลาและบริหารงานบุคคล</span>
+        </div>
+      </div>
+
+      <div class="nav-link-group">
+        <a href="employee.html" class="pill-btn-outline">
+          <span class="icon-slot-sm">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+          </span>
+          <span>หน้าจอพนักงาน</span>
+        </a>
+        <a href="admin.html" class="pill-btn-action">
+          <span class="icon-slot-sm">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          </span>
+          <span>หน้าจอแอดมิน</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Portal Landing Container -->
+  <main class="portal-container">
+    <h2 class="portal-hero-title">เลือกระบบที่ต้องการเข้าใช้งาน</h2>
+    <p class="portal-hero-sub">
+      ระบบถูกออกแบบและแยกหน้าการทำงานกันอย่างชัดเจนตามมาตรฐาน UX/UI สไตล์ 3D Pastel Claymorphism พร้อมข้อมูลจำลอง (Mockup Data) เชื่อมโยงกันอย่างสมบูรณ์
+    </p>
+
+    <div class="portal-cards-grid">
+      
+      <!-- Card 1: Employee Page -->
+      <a href="employee.html" class="portal-card">
+        <div class="portal-card-icon-box" style="background: linear-gradient(135deg, #E8F9F2 0%, #CEF5E4 100%); color:#2FA87C;">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        </div>
+        <h3 class="portal-card-title">หน้าจอพนักงาน (Mobile View)</h3>
+        <p class="portal-card-desc">
+          สำหรับพนักงานบันทึกเวลาเข้า-ออกงานด้วยปุ่ม 3D ขนาดใหญ่ ตรวจสอบพิกัด GPS แสดงนาฬิกา Real-time และระบบสะสมคะแนนแลกของรางวัล
+        </p>
+        <button type="button" class="btn-3d-action btn-green-add" style="margin-top:auto; width:100%; justify-content:center;">
+          <span class="icon-slot-sm">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+          </span>
+          <span>เข้าสู่หน้าจอพนักงาน</span>
+        </button>
+      </a>
+
+      <!-- Card 2: Admin Page -->
+      <a href="admin.html" class="portal-card">
+        <div class="portal-card-icon-box" style="background: linear-gradient(135deg, #EDF5FF 0%, #D4E8FE 100%); color:#397ED6;">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        </div>
+        <h3 class="portal-card-title">หน้าจอแอดมิน (Desktop View)</h3>
+        <p class="portal-card-desc">
+          สำหรับฝ่ายบุคคลและผู้ดูแลระบบ ตรวจสอบสถิติประจำวัน สรุปสถานะการเข้างาน จัดการข้อมูลในตารางขอบมน และตั้งค่ากติกาคะแนนสะสม
+        </p>
+        <button type="button" class="btn-3d-action" style="margin-top:auto; width:100%; justify-content:center; background:linear-gradient(180deg, #5BA4FC 0%, #3D8CEB 100%); color:#fff; box-shadow: 0 4px 0 #286EC4;">
+          <span class="icon-slot-sm">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          </span>
+          <span>เข้าสู่หน้าจอแอดมิน</span>
+        </button>
+      </a>
+
+    </div>
+  </main>
+
+  <script src="icons.js"></script>
+</body>
+</html>
